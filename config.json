@@ -1,0 +1,27 @@
+{
+    "pixiv": {
+        "access": "",
+        "refresh": ""
+    },
+    "display": {
+        "home": {
+            "image": "original",
+            "ipp": "50",
+            "order": "default"
+        },
+        "artwork": {
+            "image": "original"
+        }
+    },
+    "app_key": "3A#RSiFq5zO4qMqO22gnF65B&9ayUSD^6Bwh3we@JIlCF$wkf#gi$Y%A%xKW3iZTIo",
+    "read_only": false,
+    "read_only_token": "O5yvij95F2C3AibqmYvRZhu0",
+    "temp_path": "./temp",
+    "filesystem": "local",
+    "filesystem_options": {
+        "path": "./data",
+        "server": "",
+        "token": "",
+        "proxy": false
+    }
+}
