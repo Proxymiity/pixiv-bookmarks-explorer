@@ -109,7 +109,7 @@
         </div>
     {% endif %}
 {% endwith %}
-<div class="row" style="margin-bottom: 8px;">
+<div class="row" style="margin-bottom: 8px;margin-right: 0px;margin-left: 0px;">
     <div class="col-10 col-sm-6 col-md-6 col-lg-6 offset-1 offset-sm-1 offset-md-1 offset-lg-1"
          style="margin-bottom: 16px;">{% if a.nsfw %}
         <p class="fw-semibold" style="margin: 0;font-size: 11px;color: darkred;">NOT SAFE FOR WORK</p>{% endif %}
@@ -189,7 +189,7 @@
         user on pixiv</a>
     </div>
 </div>
-<div class="row">{% for img in a.original_images %}
+<div class="row" style="margin-right: 0px;margin-left: 0px;">{% for img in a.original_images %}
     <div class="col-10 col-sm-10 col-md-10 col-lg-10 offset-1 offset-sm-1 offset-md-1 offset-lg-1 d-flex d-sm-flex d-md-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center"
          style="margin-bottom: 16px; display: grid; height: 100%"><a
             href="/i/{{ a.id }}/{{ loop.index - 1 }}/{{ image }}"><img class="img-fluid"
