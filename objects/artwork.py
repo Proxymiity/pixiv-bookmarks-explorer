@@ -64,6 +64,14 @@ class Artwork:
             return [cls(artworks[a]) for a in aws]
         return [cls(artworks[a]) for a in aws[offset:offset+limit]]
 
+    @classmethod
+    def all_filtered(cls, limit=0, offset=0):
+        aws = [k for k, v in artworks.items() if v["x_restrict"] <= 0]  # filter artworks when creating keys list
+        aws.reverse()
+        if not limit:
+            return [cls(artworks[a]) for a in aws]
+        return [cls(artworks[a]) for a in aws[offset:offset+limit]]
+
 
 class ArtworkTag:
     def __init__(self, tag_meta):

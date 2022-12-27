@@ -58,13 +58,15 @@ def home(page=None, image=None, ipp=None, order=None):
         flash("<b>Invalid display settings.</b> The order setting was set to <u>default</u>.", "warning")
         order = "default"
 
-    # Get artworks, filter them and do some pagination
-    aws = Artwork.all(limit=ipp, offset=ipp * (page - 1))
-    aws = [a for a in aws if (a.nsfw and _show_nsfw) or not a.nsfw]  # Probably not the most time-efficient thing to do
-    computed_artworks = {a: artworks[a] for a in artworks
-                         if ((artworks[a]["x_restrict"] > 0) and _show_nsfw) or artworks[a]["x_restrict"] == 0}
+    # Get artworks and do some pagination
+    if _show_nsfw:
+        aws = Artwork.all(limit=ipp, offset=ipp * (page - 1))
+        aw_count = len(artworks)
+    else:
+        aws = Artwork.all_filtered(limit=ipp, offset=ipp * (page - 1))
+        aw_count = len([a for a in artworks.values() if a["x_restrict"] <= 0])
     if ipp > 0:
-        pages = ceil(len(computed_artworks) / ipp)
+        pages = ceil(aw_count / ipp)
         pagination = utils.gen_paginate_data(page, pages, f"/p/{{}}/{image}/{ipp}/{order}" if _full_route else "/p/{}",
                                              margin=5)
     else:  # Remove pagination in case ipp = max, leaving pagination would raise a DivisionByZeroError
