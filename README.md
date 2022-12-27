@@ -107,3 +107,26 @@ Those options are only effective for the frontend. User or instance settings won
 - `disabled`  
   Completely disable NSFW on the instance. Those artworks will still be downloaded, but won't be shown in the homepage or artwork page.
   Users cannot override this setting.
+
+# Routes
+- `/` Artwork list
+  - `/p/<page>` Specified page of artwork list
+  - `/p/<page>/<image quality>/<images per page>/<order>` Specified page of artwork list with preview parameters (iq: original, large, medium, square_medium) (order: default (by ingress date), artwork (by creation date))
+- `/a/<id>` Artwork details
+  - `/a/<id>/<image quality>` Artwork details with specified image quality
+  - `/a/<id>/pdf` Download artwork as PDF
+    - `/a/<id>/pdf/<image quality>` Download artwork as PDF with specified image quality
+  - `/a/<id>/zip` Download artwork as ZIP
+    - `/a/<id>/zip/<image quality>` Download artwork as ZIP with specified image quality
+  - `/a/<id>/meta` Artwork JSON metadata
+  - `/a/<id>/delete` Delete specified artwork
+  - `/a/<id>/pixiv` View artwork page on pixiv
+  - `/a/<id>/user-pixiv` View artist profile on pixiv
+- `/i/<id>/<image>` Download specific image of artwork
+  - `/i/<id>/<image>/<image quality>` Download specific image of artwork with specific quality
+- `/display/home` POST for artwork display settings (image quality, images per page, artwork order)
+- `/display/artwork` POST for artwork display settings (image quality)
+  - `/display/artwork/<r>` POST for artwork display settings (image quality) (r: redirect to artwork)
+- `/display/nsfw/<setting>?r=<r>` Set the NSFW cookie (enable, disable) (r: redirect to path after cookie definition)
+- `/refresh` Trigger artwork list refresh
+- `/admin` GET/POST for admin page for read-only instances
