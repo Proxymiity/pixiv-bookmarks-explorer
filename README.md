@@ -32,7 +32,8 @@ The provided app_key can be modified, and only allows Flask's flash() method to 
         },
         "artwork": {
             "image": "original"
-        }
+        },
+        "nsfw": "hidden"
     },
     "app_key": "3A#RSiFq5zO4qMqO22gnF65B&9ayUSD^6Bwh3we@JIlCF$wkf#gi$Y%A%xKW3iZTIo",
     "read_only": false,
@@ -54,6 +55,7 @@ The provided app_key can be modified, and only allows Flask's flash() method to 
     - `display.home.ipp` sets the number of images per home page.
     - `display.home.order` defines the display order for artworks on the home page.
     - `display.artwork.image` sets the image format to use when viewing artworks.
+    - `display.nsfw` sets the 'Not Safe For Work' artwork policy. (see below)
 - `app_key` is mandatory in order to display warnings/errors, using sessions.
 - `read_only` makes the application read-only, preventing clients from refreshing or deleting artworks. (see below)
 - `read_only_token` specifies the token used to refresh or delete artworks while the app is read-only.
@@ -89,3 +91,19 @@ There are two ways to store artworks.
     - Redirects the client to the image, but can be configured to proxy images to act as local storage to the client
 
 FYI, storing 1508 artworks represents 6.3 GB of image data and 4.9 MB of metadata. This includes all metadata from pixiv as well as reduced versions (large/medium/square).
+
+# NSFW policies
+There are 4 policies for NSFW.  
+Those options are only effective for the frontend. User or instance settings won't be verified on `/i/<ID>` (direct image links) or `</a/ID/{zip,pdf}>`.
+- `enabled`  
+  Display all NSFW artworks.  
+  Users cannot override this setting.
+- `hidden`  
+  Hide all NSFW artworks from the homepage. Those artworks can still be accessed via their `/a/<ID>` page.  
+  Users can override this setting, allowing NSFW on the homepage.
+- `required`  
+  Hide all NSFW artworks from all pages.  
+  Users can override this setting, allowing NSFW on all pages.
+- `disabled`  
+  Completely disable NSFW on the instance. Those artworks will still be downloaded, but won't be shown in the homepage or artwork page.
+  Users cannot override this setting.

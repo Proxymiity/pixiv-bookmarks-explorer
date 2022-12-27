@@ -1,4 +1,4 @@
-from flask import flash as orig_flash, Markup
+from flask import flash as orig_flash, Markup, request
 from datetime import datetime, timezone, timedelta
 
 from pxyTools import JSONDict
@@ -91,3 +91,33 @@ def now_tz():
     offset = round((datetime.now() - datetime.utcnow()).seconds/3600)
     tzdata = timezone(timedelta(hours=offset))
     return datetime.now(tzdata)
+
+
+def get_nsfw(page):
+    pref = conf["display"]["nsfw"]
+    user = request.cookies.get("nsfw_state", "false") == "true"
+
+    # NSFW is enabled on home+artwork, ignoring the user choice
+    if pref == "enabled":
+        return True
+    # NSFW is required to be user-enabled on all pages
+    elif pref == "required":
+        return user
+    # NSFW is required to be user-enabled for it to show on the homepage
+    elif pref == "hidden":
+        if page == "home":
+            return user
+        else:
+            return True
+    # NSFW is disabled on home+artwork, ignoring the user choice
+    else:
+        return False
+
+
+def get_nsfw_state(page):
+    pref = conf["display"]["nsfw"]
+    user = request.cookies.get("nsfw_state", "false") == "true"
+    if page == "home":
+        return pref in ("required", "hidden"), user
+    else:
+        return pref == "required", user

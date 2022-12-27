@@ -13,11 +13,11 @@
     <meta name="description" content="{{ a.caption }}">
     <meta property="og:title" content="{{ a.title }} | Pixiv Bookmarks Explorer">
     <meta property="og:description" content="{{ a.caption }}">
-    <meta property="og:image" content="/i/{{ a.id }}/0/large">
+    {% if display %}<meta property="og:image" content="/i/{{ a.id }}/0/large">{% endif %}
     <meta name="twitter:title" content="{{ a.title }} | Pixiv Bookmarks Explorer">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="/i/{{ a.id }}/0/large">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    {% if display %}<meta name="twitter:image" content="/i/{{ a.id }}/0/large">{% endif %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.min.css') }}">
 </head>
 
@@ -38,6 +38,15 @@
                 <li class="nav-item"><a class="nav-link" href="/random">Random</a></li>
                 <li class="nav-item"><a class="nav-link" href="#" data-bs-target="#preferences" data-bs-toggle="modal">Preferences</a>
                 </li>
+                {% if nsfw_master %}
+                    {% if nsfw %}
+                        <li class="nav-item"><a class="nav-link" href="/display/nsfw/disable?r={{ request.path }}">Disable
+                            NSFW</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="#" data-bs-target="#preferences-nsfw"
+                                                data-bs-toggle="modal">Enable NSFW</a></li>
+                    {% endif %}
+                {% endif %}
             </ul>
             {% if ro == False %}
             <a class="btn btn-primary" role="button" href="/refresh">Refresh</a>
@@ -92,6 +101,25 @@
                             return false;
                         }
                     </script>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" role="dialog" tabindex="-1" id="preferences-nsfw">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Enable NSFW</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>This will enable artworks tagged as "Not Safe For Work".&nbsp;<br>Please keep in mind that this setting mimics pixiv's NSFW setting, which means that even without enabling R-18 content, some NSFW content can still persist.</p>
+                        <p>This setting will only apply to this browser and will persist as long as you don't clear your
+                            browser data.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button>
+                        <a class="btn btn-primary" role="button" href="/display/nsfw/enable?r={{ request.path }}">Enable NSFW</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,6 +217,7 @@
         user on pixiv</a>
     </div>
 </div>
+{% if display %}
 <div class="row" style="margin-right: 0px;margin-left: 0px;">{% for img in a.original_images %}
     <div class="col-10 col-sm-10 col-md-10 col-lg-10 offset-1 offset-sm-1 offset-md-1 offset-lg-1 d-flex d-sm-flex d-md-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center"
          style="margin-bottom: 16px; display: grid; height: 100%"><a
@@ -197,7 +226,14 @@
                                                                        src="/i/{{ a.id }}/{{ loop.index - 1 }}/{{ image }}"/></a>
     </div>
 {% endfor %}</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+{% else %}
+    <div class="row" style="margin-right: 0px;margin-left: 0px;">
+        <div class="col-10 col-sm-10 col-md-10 col-lg-10 offset-1 offset-sm-1 offset-md-1 offset-lg-1 d-flex d-sm-flex d-md-flex d-lg-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center"
+             style="margin-bottom: 16px; display: grid; height: 100%"><p style="margin: 0;font-size: 11px;color: darkred;text-transform: uppercase;">NSFW policy prevents this artwork from being displayed.</p>
+        </div>
+    </div>
+{% endif %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

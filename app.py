@@ -8,7 +8,7 @@
 
 # The provided app_key can be modified, and only allows Flask's flash() method to work properly.
 
-from flask import Flask, redirect, url_for, request, render_template, send_file, Response
+from flask import Flask, redirect, url_for, request, render_template, send_file, Response, make_response
 import threading
 from random import choice
 from math import ceil
@@ -31,6 +31,8 @@ app.secret_key = conf["app_key"]
 @app.route("/p/<page>/<image>/<ipp>/<order>")
 def home(page=None, image=None, ipp=None, order=None):
     _full_route = True if order else False
+    _show_nsfw = utils.get_nsfw("home")
+    _nsfw_pref, _nsfw_user = utils.get_nsfw_state("home")
 
     # Get page and display settings from config/path
     try:
@@ -56,10 +58,13 @@ def home(page=None, image=None, ipp=None, order=None):
         flash("<b>Invalid display settings.</b> The order setting was set to <u>default</u>.", "warning")
         order = "default"
 
-    # Get artworks and do some pagination
+    # Get artworks, filter them and do some pagination
     aws = Artwork.all(limit=ipp, offset=ipp * (page - 1))
+    aws = [a for a in aws if (a.nsfw and _show_nsfw) or not a.nsfw]  # Probably not the most time-efficient thing to do
+    computed_artworks = {a: artworks[a] for a in artworks
+                         if ((artworks[a]["x_restrict"] > 0) and _show_nsfw) or artworks[a]["x_restrict"] == 0}
     if ipp > 0:
-        pages = ceil(len(artworks) / ipp)
+        pages = ceil(len(computed_artworks) / ipp)
         pagination = utils.gen_paginate_data(page, pages, f"/p/{{}}/{image}/{ipp}/{order}" if _full_route else "/p/{}",
                                              margin=5)
     else:  # Remove pagination in case ipp = max, leaving pagination would raise a DivisionByZeroError
@@ -69,7 +74,7 @@ def home(page=None, image=None, ipp=None, order=None):
     return render_template("home.html", artworks=aws,
                            display_config=conf["display"]["home"], image=image,
                            pagination=pagination,
-                           ro=conf["read_only"])
+                           ro=conf["read_only"], nsfw_master=_nsfw_pref, nsfw=_nsfw_user)
 
 
 @app.route("/random")
@@ -161,9 +166,23 @@ def settings_artwork(r=None):
     return redirect(url_for("home"))  # home redirect should never happen in the first place
 
 
+@app.route("/display/nsfw/<mode>")
+def settings_nsfw(mode):
+    r = request.args.get("r", "")
+    if r:
+        resp = make_response(redirect(r))
+        resp.set_cookie("nsfw_state", "true" if mode == "enable" else "false")
+        return resp
+    resp = make_response(redirect(url_for("home")))
+    resp.set_cookie("nsfw_state", "true" if mode == "enable" else "false")
+    return resp
+
+
 @app.route("/a/<artwork>")
 @app.route("/a/<artwork>/<image>")
 def artwork_show(artwork, image=None):
+    _show_nsfw = utils.get_nsfw("artwork")
+    _nsfw_pref, _nsfw_user = utils.get_nsfw_state("artwork")
     image = image or conf["display"]["artwork"]["image"]
     if image not in ("original", "large", "medium", "square_medium"):
         flash("<b>Invalid display settings.</b> The image setting was set to <u>original</u>.", "warning")
@@ -174,8 +193,8 @@ def artwork_show(artwork, image=None):
         return redirect(url_for("home"))
     return render_template("artwork.html", a=aw,
                            display_config=conf["display"]["artwork"],
-                           image=image,
-                           ro=conf["read_only"])
+                           image=image, display=(aw.nsfw and _show_nsfw) or not aw.nsfw,
+                           ro=conf["read_only"], nsfw_master=_nsfw_pref, nsfw=_nsfw_user)
 
 
 @app.route("/a/<artwork>/pixiv")

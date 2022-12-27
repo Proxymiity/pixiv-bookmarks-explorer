@@ -11,7 +11,8 @@
         },
         "artwork": {
             "image": "original"
-        }
+        },
+        "nsfw": "required"
     },
     "app_key": "3A#RSiFq5zO4qMqO22gnF65B&9ayUSD^6Bwh3we@JIlCF$wkf#gi$Y%A%xKW3iZTIo",
     "read_only": false,
