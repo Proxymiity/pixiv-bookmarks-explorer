@@ -173,10 +173,10 @@ def settings_nsfw(mode):
     r = request.args.get("r", "")
     if r:
         resp = make_response(redirect(r))
-        resp.set_cookie("nsfw_state", "true" if mode == "enable" else "false")
+        resp.set_cookie("nsfw_state", "true" if mode == "enable" else "false", max_age=31536000)
         return resp
     resp = make_response(redirect(url_for("home")))
-    resp.set_cookie("nsfw_state", "true" if mode == "enable" else "false")
+    resp.set_cookie("nsfw_state", "true" if mode == "enable" else "false", max_age=31536000)
     return resp
 
 
